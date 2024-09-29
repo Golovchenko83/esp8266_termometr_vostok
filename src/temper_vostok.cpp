@@ -148,14 +148,8 @@ void loop()
       hum_s = hum_s / 2;
       time_20s = 0;
       float error;
-      if (temp_am_raw >= bmp280_raw)
-      {
-        error = temp_am_raw - bmp280_raw;
-      }
-      else
-      {
-        error = bmp280_raw - temp_am_raw;
-      }
+
+      error = fabs(fabs(bmp280_raw) - fabs(temp_am_raw));
 
       if (!isnan(hum_s) && !isnan(temp_s) && (error < 1.5))
       {
