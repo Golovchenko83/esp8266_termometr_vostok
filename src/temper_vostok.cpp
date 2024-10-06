@@ -150,7 +150,8 @@ void loop()
       float error;
 
       error = fabs(fabs(bmp280_raw) - fabs(temp_am_raw));
-
+      publish_send("temp_vostok", bmp280_raw);
+      /*
       if (!isnan(hum_s) && !isnan(temp_s) && (error < 1.5))
       {
         publish_send("temp_vostok", temp_s);
@@ -170,6 +171,7 @@ void loop()
           ESP.restart();
         }
       }
+      */
       hum_s = 0;
       temp_s = 0;
     }
