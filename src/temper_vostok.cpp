@@ -3,11 +3,12 @@
 #include <OneWire.h>
 #include <ArduinoOTA.h>
 #include <PubSubClient.h>
-#include "DHTesp.h"
+#include <DHT.h>
 #include "GyverTimer.h"
 #include <Adafruit_BMP280.h>
-OneWire ds(0);
-DHTesp dht;
+#define DHTPIN D6
+#define DHTTYPE DHT22 // DHT 22 (AM2302)
+DHT dht(DHTPIN, DHTTYPE);
 Adafruit_BMP280 bmp; // I2C
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -77,7 +78,8 @@ void setup()
   // Serial.begin(9600);
   Wire.begin(D1, D2);
   wi_fi_config();
-  dht.setup(D6, DHTesp::DHT22);
+ // dht.begin();
+ // bmp.begin(0x76);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   OTA_Wifi.setInterval(2);   // настроить интервал
@@ -131,14 +133,16 @@ void loop()
   if (Sensor.isReady())
   {
     digitalWrite(D7, LOW);
-    delay(2000);
+    delay(5000);
+    dht.begin();
     bmp.begin(0x76);
-    dht.setup(D6, DHTesp::DHT22);
+    
     delay(50);
-    float hum_raw = dht.getHumidity();
-    float temp_am_raw = dht.getTemperature() + 0.1;
+    float hum_raw = dht.readHumidity();
+    float temp_am_raw = dht.readTemperature() + 0.1;
     float bmp280_raw = bmp.readTemperature() - 0.3;
     float bmp280_raw_pres = bmp.readPressure() * 0.00750063755419211;
+    digitalWrite(D7, HIGH);
     temp_s = temp_s + temp_am_raw + bmp280_raw;
     hum_s = hum_s + hum_raw;
     time_20s++;
@@ -152,7 +156,17 @@ void loop()
       error = fabs(fabs(bmp280_raw) - fabs(temp_am_raw));
       publish_send("temp_vostok", bmp280_raw);
       publish_send("bmp_vostok_pres", bmp280_raw_pres);
-      publish_send("hum_vostok", hum_s);
+      publish_send("am_vostok", temp_am_raw);
+      publish_send("bmp_vostok", bmp280_raw);
+      if (hum_s > 0)
+      {
+        publish_send("hum_vostok", hum_s);
+      }
+      else
+      {
+        hum_s = 99999;
+        publish_send("hum_vostok", hum_s);
+      }
       /*
       if (!isnan(hum_s) && !isnan(temp_s) && (error < 1.5))
       {
