@@ -78,8 +78,8 @@ void setup()
   // Serial.begin(9600);
   Wire.begin(D1, D2);
   wi_fi_config();
- // dht.begin();
- // bmp.begin(0x76);
+  // dht.begin();
+  // bmp.begin(0x76);
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   OTA_Wifi.setInterval(2);   // настроить интервал
@@ -136,7 +136,7 @@ void loop()
     delay(5000);
     dht.begin();
     bmp.begin(0x76);
-    
+
     delay(50);
     float hum_raw = dht.readHumidity();
     float temp_am_raw = dht.readTemperature() + 0.1;
@@ -156,8 +156,8 @@ void loop()
       error = fabs(fabs(bmp280_raw) - fabs(temp_am_raw));
       publish_send("temp_vostok", bmp280_raw);
       publish_send("bmp_vostok_pres", bmp280_raw_pres);
-     // publish_send("am_vostok", temp_am_raw);
-     // publish_send("bmp_vostok", bmp280_raw);
+      // publish_send("am_vostok", temp_am_raw);
+      // publish_send("bmp_vostok", bmp280_raw);
       if (hum_s > 0)
       {
         publish_send("hum_vostok", hum_s);
