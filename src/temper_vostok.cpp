@@ -156,8 +156,8 @@ void loop()
       error = fabs(fabs(bmp280_raw) - fabs(temp_am_raw));
       publish_send("temp_vostok", bmp280_raw);
       publish_send("bmp_vostok_pres", bmp280_raw_pres);
-      publish_send("am_vostok", temp_am_raw);
-      publish_send("bmp_vostok", bmp280_raw);
+     // publish_send("am_vostok", temp_am_raw);
+     // publish_send("bmp_vostok", bmp280_raw);
       if (hum_s > 0)
       {
         publish_send("hum_vostok", hum_s);
